@@ -1,0 +1,134 @@
+﻿@model ProjetoExemplo.Models.Processo
+
+@{
+    ViewData["Title"] = "Detalhes do Processo";
+}
+
+<h2>Detalhes do Processo</h2>
+
+<div id="toast-container" class="position-fixed top-0 end-0 p-3" style="z-index: 10050;"></div>
+
+<div class="mt-4">
+    <button type="button" class="btn btn-primary ml-2 mb-3" data-bs-toggle="modal" data-bs-target="#editModal">Editar</button>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3>Informações do Processo</h3>
+    </div>
+    <div class="card-body">
+        <div class="mb-3">
+            <label><strong>ID:</strong></label>
+            <span>@Model.Id</span>
+        </div>
+        <div class="mb-3">
+            <label><strong>Nome do Processo:</strong></label>
+            <span>@Model.Name</span>
+        </div>
+        <div class="mb-3">
+            <label><strong>NPU:</strong></label>
+            <span>@Model.Npu</span>
+        </div>
+        <div class="mb-3">
+            <label><strong>Data de Cadastro:</strong></label>
+            <span>@TimeZoneInfo.ConvertTimeFromUtc(Model.DataCadastro, TimeZoneInfo.Local)</span>
+        </div>
+        <div class="mb-3">
+            <label><strong>Data de Visualização:</strong></label>
+            <span>@ViewBag.DataVisualizacaoLocal</span>
+        </div>
+        <div class="mb-3">
+            <label><strong>UF:</strong></label>
+            <span>@Model.Uf</span>
+        </div>
+        <div class="mb-3">
+            <label><strong>Município:</strong></label>
+            <span>@Model.MunicipioNome</span>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+</div>
+
+<!-- Modal de Edição -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Editar Processo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="Edit" method="post" onsubmit="return validarFormulario()">
+                <input type="hidden" name="Id" value="@Model.Id" />
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="Name" class="form-label"><strong>Nome do Processo</strong></label>
+                        <input type="text" class="form-control" id="Name" name="Name" value="@Model.Name" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="Npu" class="form-label"><strong>NPU</strong></label>
+                        <input type="text" class="form-control" id="Npu" name="Npu" maxlength="25" oninput="mascararNPU(this)" value="@Model.Npu" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="Uf" class="form-label"><strong>UF</strong></label>
+                       <select id="Uf" name="Uf" class="form-control" asp-for="Uf" required>
+                            <option value="">Selecione a UF</option>
+                            @foreach (var uf in new List<string> { "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO" })
+                            {
+                                <option value="@uf">@uf</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="MunicipioNome" class="form-label"><strong>Município</strong></label>
+                        <select id="MunicipioNome" name="MunicipioNome" class="form-control" required>
+                            <option value="@Model.MunicipioNome">@Model.MunicipioNome</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Salvar Alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#Npu').mask('0000000-00.0000.0.00.0000');
+
+            // Atualizar lista de municípios ao selecionar uma UF
+            $('#Uf').change(function () {
+                var uf = $(this).val();
+                if (uf) {
+                    $.getJSON('@Url.Action("GetMunicipios", "Processo")', { uf: uf }, function (data) {
+
+                        var municipioSelect = $('#MunicipioNome');
+                        var municipioOriginal = municipioSelect.val();
+
+                        municipioSelect.empty();
+                        municipioSelect.append(`<option value="${municipioOriginal}">${municipioOriginal}</option>`);
+                                $.each(data, function (i, municipio) {
+                            municipioSelect.append(`<option value="${municipio.nome}">${municipio.nome}</option>`);
+                        });
+                    });
+                }
+            });
+
+            // Carregar municípios ao carregar a página, caso já tenha uma UF selecionada
+            var selectedUf = $('#Uf').val();
+            if (selectedUf) {
+                $('#Uf').change();
+            }
+        });
+    </script>
+    <script src="~/js/create.js"></script>
+}

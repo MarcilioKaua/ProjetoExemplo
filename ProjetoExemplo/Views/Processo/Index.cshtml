@@ -1,0 +1,119 @@
+﻿@model PaginatedList<ProjetoExemplo.Models.Processo>
+
+@{
+    ViewData["Title"] = "Processos";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Processos</h1>
+</div>
+
+<a asp-action="Create" class="btn btn-primary">Novo Processo</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>NPU</th>
+            <th>Data de Cadastro</th>
+            <th>UF</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var processo in Model)
+        {
+            <tr>
+                <td>@FormatNpu(processo.Npu)</td>
+                <td>@TimeZoneInfo.ConvertTimeFromUtc(processo.DataCadastro, TimeZoneInfo.Local).ToString("dd/MM/yyyy HH:mm:ss")</td>
+                <td>@processo.Uf</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@processo.Id" class="btn btn-primary btn-sm">Visualizar</a> 
+                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" 
+                        data-id="@processo.Id" data-name="@processo.Name">Excluir</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<nav class="container">
+    <ul class="pagination d-flex justify-content-center">
+        @if (Model.HasPreviousPage)
+        {
+            <li class="page-item">
+                <a asp-action="Index" asp-route-page="@(Model.PageIndex - 1)" class="page-link">Anterior</a>
+            </li>
+        }
+        else
+        {
+            <li class="page-item disabled">
+                <span class="page-link">Anterior</span>
+            </li>
+        }
+
+        @for (var i = 1; i <= Model.TotalPages; i++)
+        {
+            if (i == Model.PageIndex)
+            {
+                <li class="page-item active">
+                    <span class="page-link">@i</span>
+                </li>
+            }
+            else
+            {
+                <li class="page-item">
+                    <a asp-action="Index" asp-route-page="@i" class="page-link">@i</a>
+                </li>
+            }
+        }
+
+        @if (Model.HasNextPage)
+        {
+            <li class="page-item">
+                <a asp-action="Index" asp-route-page="@(Model.PageIndex + 1)" class="page-link">Próximo</a>
+            </li>
+        }
+        else
+        {
+            <li class="page-item disabled">
+                <span class="page-link">Próximo</span>
+            </li>
+        }
+    </ul>
+</nav>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirmar Exclusão</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza de que deseja excluir o processo "<span id="processName"></span>"?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="deleteForm" method="post">
+                    <button type="submit" class="btn btn-danger">Excluir</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    private string FormatNpu(string npu)
+    {
+        if (string.IsNullOrEmpty(npu) || npu.Length != 20)
+        {
+            return npu; 
+        }
+
+        return $"{npu.Substring(0, 7)}-{npu.Substring(7, 2)}.{npu.Substring(9, 4)}.{npu.Substring(13, 1)}.{npu.Substring(14, 2)}.{npu.Substring(16)}";
+    }
+}
+
+@section Scripts {
+    <script src="~/js/index.js"></script>
+}

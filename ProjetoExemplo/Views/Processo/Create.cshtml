@@ -1,0 +1,56 @@
+﻿@model ProjetoExemplo.Models.Processo
+
+@{
+    ViewData["Title"] = "Cadastrar Processo";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/create.css" />
+}
+
+<a href="/Processo/Index" class="btn btn-link btn-back">
+    <i class="bi bi-arrow-left-circle"></i>
+    <span class="btn-back-text">Voltar</span>
+</a>
+
+<h2>Cadastrar Processo</h2>
+
+<div id="toast-container" class="position-fixed top-0 end-0 p-3" style="z-index: 1050;"></div>
+
+<form asp-action="Create" method="post" onsubmit="return validarFormulario()">
+    <div class="form-group">
+        <label for="Name">Nome</label>
+        <input type="text" class="form-control" id="Name" name="Name" required />
+    </div>
+    <div class="form-group">
+        <label for="Npu">NPU</label>
+        <input type="text" class="form-control" id="Npu" name="Npu" maxlength="25" required />
+    </div>
+    <div class="form-group">
+        <label for="Uf">UF</label>
+        <select class="form-control" id="Uf" name="Uf" onchange="carregarMunicipios()" required>
+            <option value="">Selecione a UF</option>
+            @foreach (var uf in new List<string> { "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO" })
+            {
+                <option value="@uf">@uf</option>
+            }
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="MunicipioId">Município</label>
+        <select class="form-control" id="MunicipioId" name="MunicipioId" required>
+            <option value="">Selecione o município</option>
+        </select>
+    </div>
+    <input type="hidden" id="MunicipioNome" name="MunicipioNome" />
+    <button type="submit" class="btn btn-primary">Salvar</button>
+</form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#Npu').mask('0000000-00.0000.0.00.0000');
+        });
+    </script>
+    <script src="~/js/create.js"></script>
+}

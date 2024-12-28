@@ -1,0 +1,41 @@
+﻿a:focus, a:active {
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
+h2 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem !important;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+input.form-control, select.form-control {
+    border-radius: 0.25rem;
+    border: 1px solid #ced4da;
+}
+
+input:focus, select:focus {
+    border-color: #80bdff;
+    outline: none;
+}
+
+.btn-back {
+    margin-bottom: 1rem;
+    padding-left: 0;
+    text-decoration: none !important;
+}
+
+.btn-back .bi-arrow-left-circle {
+    font-size: 2rem;
+    margin-right: 8px;
+}
+
+.btn-back-text {
+    font-size: 1.5rem;
+    font-weight: 400;
+    margin-left: 0.5rem;
+}
