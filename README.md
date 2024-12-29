@@ -23,8 +23,7 @@ Antes de rodar o projeto, verifique se você possui os seguintes requisitos inst
 Clone o repositório em sua máquina local:
 
 ```bash
-git clone https://github.com/seu-usuario/seu-repositorio.git
-cd seu-repositorio
+git clone https://github.com/MarcilioKaua/ProjetoExemplo.git
 ```
 
 ## Configuração do Projeto
