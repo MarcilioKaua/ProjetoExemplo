@@ -103,32 +103,46 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-            $('#Npu').mask('0000000-00.0000.0.00.0000');
+            // Carregar municípios ao carregar a página, caso já tenha uma UF selecionada
+            var selectedUf = $('#Uf').val();
+            var selectedMunicipio = $('#MunicipioNome').val();
+
+            if (selectedUf) {
+                atualizarMunicipios(selectedUf, selectedMunicipio);
+            }
 
             // Atualizar lista de municípios ao selecionar uma UF
             $('#Uf').change(function () {
                 var uf = $(this).val();
                 if (uf) {
-                    $.getJSON('@Url.Action("GetMunicipios", "Processo")', { uf: uf }, function (data) {
-
-                        var municipioSelect = $('#MunicipioNome');
-                        var municipioOriginal = municipioSelect.val();
-
-                        municipioSelect.empty();
-                        municipioSelect.append(`<option value="${municipioOriginal}">${municipioOriginal}</option>`);
-                                $.each(data, function (i, municipio) {
-                            municipioSelect.append(`<option value="${municipio.nome}">${municipio.nome}</option>`);
-                        });
-                    });
+                    atualizarMunicipios(uf, null);
+                } else {
+                    $('#MunicipioNome').empty();
+                    $('#MunicipioNome').append('<option value="">Selecione uma UF primeiro</option>');
                 }
             });
-
-            // Carregar municípios ao carregar a página, caso já tenha uma UF selecionada
-            var selectedUf = $('#Uf').val();
-            if (selectedUf) {
-                $('#Uf').change();
-            }
         });
+
+        function atualizarMunicipios(uf, municipioSelecionado) {
+            var municipioSelect = $('#MunicipioNome');
+            municipioSelect.empty(); 
+            municipioSelect.append('<option value="">Carregando municípios...</option>'); 
+
+            $.getJSON('@Url.Action("GetMunicipios", "Processo")', { uf: uf }, function (data) {
+                municipioSelect.empty(); 
+                municipioSelect.append('<option value="">Selecione um município</option>'); 
+
+                // Adiciona os novos municípios
+                $.each(data, function (i, municipio) {
+                    var selected = municipio.nome === municipioSelecionado ? 'selected' : '';
+                    municipioSelect.append(`<option value="${municipio.nome}" ${selected}>${municipio.nome}</option>`);
+                });
+            }).fail(function () {
+                municipioSelect.empty();
+                municipioSelect.append('<option value="">Erro ao carregar municípios</option>'); // Trata erros no carregamento
+            });
+        }
+
     </script>
     <script src="~/js/create.js"></script>
 }
