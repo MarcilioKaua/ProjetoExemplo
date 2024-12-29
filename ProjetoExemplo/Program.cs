@@ -22,6 +22,7 @@ namespace ProjetoExemplo
             // Configures the repository and IBGE service.
             builder.Services.AddScoped<IProcessoRepository, ProcessoRepository>();
             builder.Services.AddHttpClient<IbgeApiService>();
+            builder.Services.AddScoped<ProcessoService>();
 
             var app = builder.Build();
 

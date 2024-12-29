@@ -58,5 +58,10 @@ namespace ProjetoExemplo.Repositories.Implementations
             _context.Processos.Update(processo);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<bool> VerificarNpuExistenteAsync(string npu)
+        {
+            return await _context.Processos.AnyAsync(p => p.Npu == npu);
+        }
     }
 }

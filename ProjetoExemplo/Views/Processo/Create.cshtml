@@ -17,7 +17,7 @@
 
 <div id="toast-container" class="position-fixed top-0 end-0 p-3" style="z-index: 1050;"></div>
 
-<form asp-action="Create" method="post" onsubmit="return validarFormulario()">
+<form id="createForm" method="post">
     <div class="form-group">
         <label for="Name">Nome</label>
         <input type="text" class="form-control" id="Name" name="Name" required />
@@ -45,6 +45,7 @@
     <input type="hidden" id="MunicipioNome" name="MunicipioNome" />
     <button type="submit" class="btn btn-primary">Salvar</button>
 </form>
+
 
 @section Scripts {
     <script>

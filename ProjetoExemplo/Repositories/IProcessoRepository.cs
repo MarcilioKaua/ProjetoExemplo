@@ -11,5 +11,6 @@ namespace ProjetoExemplo.Repositories
         Task AddAsync(Processo processo);
         Task UpdateAsync(Processo processo);
         Task DeleteAsync(int id);
+        Task<bool> VerificarNpuExistenteAsync(string npu);
     }
 }

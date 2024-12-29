@@ -10,11 +10,13 @@ namespace ProjetoExemplo.Controllers
     {
         private readonly IProcessoRepository repository;
         private readonly IbgeApiService ibgeApiService;
+        private readonly ProcessoService processoService;
 
-        public ProcessoController(IProcessoRepository repository, IbgeApiService ibgeApiService)
+        public ProcessoController(IProcessoRepository repository, IbgeApiService ibgeApiService, ProcessoService processoService)
         {
             this.repository = repository;
             this.ibgeApiService = ibgeApiService;
+            this.processoService = processoService;
         }
 
         public async Task<IActionResult> Index(int page = 1)
@@ -35,11 +37,13 @@ namespace ProjetoExemplo.Controllers
                 processo.DataCadastro = DateTime.UtcNow;
 
                 await repository.AddAsync(processo);
-                return RedirectToAction(nameof(Index));
+                return Json(new { success = true, redirectTo = Url.Action(nameof(Index)) });
             }
-            return View(processo);
+
+            return Json(new { success = false, message = "Erro ao validar o formulário." });
         }
 
+        [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
             var processo = await repository.GetByIdAsync(id);
@@ -86,30 +90,12 @@ namespace ProjetoExemplo.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(int id, Processo processo)
         {
-            if (id != processo.Id)
+            var result = await processoService.EditProcesso(id, processo);
+            if (!result.IsSuccess)
             {
-                return NotFound();
+                return NotFound(result.ErrorMessage);
             }
 
-            var existingProcess = await repository.GetByIdAsync(id);
-            if (existingProcess == null)
-            {
-                return NotFound("O processo com o ID especificado não foi encontrado.");
-            }
-
-            if (!string.IsNullOrWhiteSpace(processo.Name))
-                existingProcess.Name = processo.Name;
-
-            if (!string.IsNullOrWhiteSpace(processo.Npu))
-                existingProcess.Npu = processo.Npu;
-
-            if (!string.IsNullOrWhiteSpace(processo.Uf))
-                existingProcess.Uf = processo.Uf;
-
-            if (!string.IsNullOrWhiteSpace(processo.MunicipioNome))
-                existingProcess.MunicipioNome = processo.MunicipioNome;
-
-            await repository.UpdateAsync(existingProcess);
             return RedirectToAction(nameof(Index));
         }
 
@@ -124,6 +110,13 @@ namespace ProjetoExemplo.Controllers
 
             await repository.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> VerificarNpuExistente(string npu)
+        {
+            bool npuExistente = await repository.VerificarNpuExistenteAsync(npu);
+            return Json(new { existe = npuExistente });
         }
     }
 }
